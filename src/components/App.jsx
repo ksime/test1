@@ -6,11 +6,26 @@ import Dog from './Dog';
 import * as actions from '../actions';
 
 class App extends Component {
+  static compareDirectDogs(a, b) {
+    if (a.breed > b.breed) {
+      return 1;
+    }
+    return -1;
+  }
+
+  static compareReverseDogs(a, b) {
+    if (a.breed > b.breed) {
+      return -1;
+    }
+    return 1;
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       display: false,
       dogs: '',
+      list: [],
     };
   }
 
@@ -28,14 +43,23 @@ class App extends Component {
   }
 
   handleShowAllClick() {
-    const { list } = this.props;
-    console.log('list', list);
-    const dogs = list.map(dog => <Dog breed={dog.breed} name={dog.name} />);
-    this.setState({ display: true, dogs });
+    this.setState({ display: true, dogs: this.props.list });
+  }
+
+  directSort() {
+    const newDogs = this.state.dogs;
+    newDogs.sort(App.compareDirectDogs);
+    this.setState({ dogs: newDogs });
+  }
+
+  reverseSort() {
+    const newDogs = this.state.dogs;
+    newDogs.sort(App.compareReverseDogs);
+    this.setState({ dogs: newDogs });
   }
 
   render() {
-    console.log(this.props.list);
+    console.log('dogs', this.state.dogs);
     return (
       <div>
         <h1>test</h1>
@@ -44,15 +68,20 @@ class App extends Component {
         </Button>
         {this.state.display ? (
           <div>
-            <Button bsStyle="info" bsSize="large" onClick={() => this.props.directSort()}>
+            <Button bsStyle="info" bsSize="large" onClick={() => this.directSort()}>
               sort in direct order
             </Button>
-            <Button bsStyle="info" bsSize="large" onClick={() => this.props.reverseSort()}>
+            <Button bsStyle="info" bsSize="large" onClick={() => this.reverseSort()}>
               sort in reverse order
             </Button>
+            <input placeholder="search" />
           </div>
         ) : null}
-        <ListGroup>{this.state.display ? <div>{this.state.dogs}</div> : null}</ListGroup>
+        <ListGroup>
+          {this.state.display ? (
+            <div>{this.state.dogs.map(dog => <Dog breed={dog.breed} name={dog.name} />)}</div>
+          ) : null}
+        </ListGroup>
       </div>
     );
   }

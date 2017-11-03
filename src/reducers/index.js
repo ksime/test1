@@ -19,17 +19,14 @@ export default (state, action) => {
   }
   if (action.type === 'DIRECT_SORT') {
     const newList = state.list;
-    console.log('oldList', state.list);
     newList.sort(compareDirectDogs);
-    console.log('newList', newList);
     const newState = Object.assign({}, state, { list: newList });
     return newState;
   }
   if (action.type === 'REVERSE_SORT') {
+    console.log(state);
     const newList = state.list;
-    console.log('oldList', state.list);
     newList.sort(compareReverseDogs);
-    console.log('newList', newList);
     const newState = Object.assign({}, state, { list: newList });
     return newState;
   }
