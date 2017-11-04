@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
-import { Button, ListGroup } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Button from './Button';
+import H1 from './H1';
+import Ul from './List';
+import Input from './Input';
+import Wrapper from './Wrapper';
 import Dog from './Dog';
 import * as actions from '../actions';
+
 
 class App extends Component {
   static compareDirectDogs(a, b) {
@@ -24,8 +29,10 @@ class App extends Component {
     super(props);
     this.state = {
       display: false,
-      dogs: '',
-      list: [],
+      dogs: [],
+      filteredDogs: [],
+      value: '',
+      displayFilter: false,
     };
   }
 
@@ -40,6 +47,22 @@ class App extends Component {
         });
         this.props.fetchList(dogs);
       });
+  }
+
+  handleInputChange(event) {
+    const inpVal = event.target.value;
+    if (inpVal === '') {
+      this.setState({ value: inpVal, displayFilter: false, filteredDogs: [] });
+    } else {
+      const filteredDogs = this.state.dogs.filter((dog) => {
+        const re = new RegExp(inpVal);
+        if (re.test(dog.breed)) {
+          return dog;
+        }
+        return null;
+      });
+      this.setState({ value: inpVal, displayFilter: true, filteredDogs });
+    }
   }
 
   handleShowAllClick() {
@@ -59,29 +82,39 @@ class App extends Component {
   }
 
   render() {
-    console.log('dogs', this.state.dogs);
     return (
       <div>
-        <h1>test</h1>
-        <Button bsStyle="success" bsSize="large" onClick={() => this.handleShowAllClick()}>
-          show all
-        </Button>
-        {this.state.display ? (
-          <div>
-            <Button bsStyle="info" bsSize="large" onClick={() => this.directSort()}>
-              sort in direct order
-            </Button>
-            <Button bsStyle="info" bsSize="large" onClick={() => this.reverseSort()}>
-              sort in reverse order
-            </Button>
-            <input placeholder="search" />
-          </div>
-        ) : null}
-        <ListGroup>
+        <H1>Dogs breeds</H1>
+        <Wrapper>
+          <Button onClick={() => this.handleShowAllClick()}>
+            show all breeds
+          </Button>
+        </Wrapper>
+        <Wrapper>
           {this.state.display ? (
-            <div>{this.state.dogs.map(dog => <Dog breed={dog.breed} name={dog.name} />)}</div>
-          ) : null}
-        </ListGroup>
+            <div>
+              <Button onClick={() => this.directSort()}>
+                sort in direct order
+              </Button>
+              <Button onClick={() => this.reverseSort()}>
+                sort in reverse order
+              </Button>
+              <Input
+                placeholder="search"
+                value={this.state.value}
+                onChange={event => this.handleInputChange(event)}
+              />
+            </div>
+            ) : null}
+        </Wrapper>
+        {this.state.display && !this.state.displayFilter ? (
+          <Ul>{this.state.dogs.map(dog => <Dog breed={dog.breed} name={dog.name} />)}</Ul>
+        ) : null}
+        {this.state.display && this.state.displayFilter ? (
+          <Ul>
+            {this.state.filteredDogs.map(dog => <Dog breed={dog.breed} name={dog.name} />)}
+          </Ul>
+        ) : null}
       </div>
     );
   }

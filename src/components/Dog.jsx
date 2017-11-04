@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import Li from './ListItem';
 
 class Dog extends Component {
   displayNames() {
@@ -8,15 +8,16 @@ class Dog extends Component {
     if (!name.length) {
       return null;
     }
-    return name.map(dogName => <ListGroupItem>{dogName} </ListGroupItem>);
+    return name.map(dogName => <div>{dogName} </div>);
   }
 
   render() {
     const { breed } = this.props;
     return (
-      <ListGroupItem header={breed}>
-        <ListGroup>{this.displayNames()}</ListGroup>
-      </ListGroupItem>
+      <Li>
+        <h3>{breed}</h3>
+        <div>{this.displayNames()}</div>
+      </Li>
     );
   }
 }
